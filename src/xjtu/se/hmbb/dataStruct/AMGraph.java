@@ -1,33 +1,63 @@
 package xjtu.se.hmbb.dataStruct;
 
 import java.io.*;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by haoyang on 2017/5/6.
  */
 public class AMGraph {
-    private List<String> vertexList;                //点的集合
+    private List<String> vertexList;                 //点的集合
     private int [][] edges;                         //存储边的矩阵
     private int numOfEdges;                         //边的个数
     private int start;                              //开始节点的下标
     private int end;                                //结束节点的下标
     private List<Integer> fruitRoomList;            //水果间，必经过的节点下标
     private List<Integer[]> anteaterPath;           //食蚁兽所在的边
-    private List<Integer[]> rewardath;              //带有奖励的边
+    private List<Integer[]> rewardPath;              //带有奖励的边
 
     public AMGraph(File file) throws IOException {
         this.numOfEdges = 0;
-        BufferedReader reader = new BufferedReader(new FileReader(file));
+        this.vertexList = new ArrayList<>();
+
         int sentry = 0;
+
+        Map<String, Integer> nodeToIndex = new HashMap<>();
+
+        BufferedReader reader = new BufferedReader(new FileReader(file));
         String line = "";
         while((line = reader.readLine()) != null) {
             if(line.trim().equals("")) {
                 sentry++;
             }
+
+            String[] charList = line.trim().split(" ");
             // 如果哨兵值为0，读取边和节点
             if(sentry == 0) {
+                int startIndex = 0;
+                int endIndex = 0;
 
+                if(nodeToIndex.containsKey(charList[0])) {
+                    startIndex = nodeToIndex.get(charList[0]);
+                } else {
+                    startIndex = vertexList.size();
+                    nodeToIndex.put(charList[0], startIndex);
+                    vertexList.add(charList[0]);
+                }
+
+                if(nodeToIndex.containsKey(charList[1])) {
+                    endIndex = nodeToIndex.get(charList[1]);
+                } else {
+                    endIndex = vertexList.size();
+                    nodeToIndex.put(charList[1], endIndex);
+                    vertexList.add(charList[1]);
+                }
+
+                //将边的权重加入edge中
+                int weight = Integer.getInteger(charList[2]);
+                edges[startIndex][endIndex] = weight;
+                edges[endIndex][startIndex] = weight;
+                numOfEdges++;
             } else if(sentry == 1) { // 如果哨兵值为1，读取食蚁兽路径
 
             } else if(sentry == 2) { //如果哨兵值为2，读取奖励的必过路径
@@ -95,11 +125,11 @@ public class AMGraph {
         this.anteaterPath = anteaterPath;
     }
 
-    public List<Integer[]> getRewardath() {
-        return rewardath;
+    public List<Integer[]> getRewardPath() {
+        return rewardPath;
     }
 
-    public void setRewardath(List<Integer[]> rewardath) {
-        this.rewardath = rewardath;
+    public void setRewardPath(List<Integer[]> rewardPath) {
+        this.rewardPath = rewardPath;
     }
 }

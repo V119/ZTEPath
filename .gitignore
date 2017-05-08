@@ -12,3 +12,9 @@
 hs_err_pid*
 .idea/
 ZTEPath.iml
+/bin/
+
+*.classpath
+*.project
+.settings/org.eclipse.jdt.core.prefs
+*.prefs

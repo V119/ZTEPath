@@ -43,6 +43,11 @@ public class AMGraph {
                 if(sentry == 0) {
                     int numOfIndex = Integer.parseInt(charList[0]);
                     this.edges = new int[numOfIndex][numOfIndex];
+                    for(int i = 0; i < numOfIndex; i++) {
+                        for(int j = 0; j < numOfIndex; j++) {
+                            edges[i][j] = Integer.MAX_VALUE;
+                        }
+                    }
                 } else if(sentry == 1) {  // 如果哨兵值为0，读取边和节点
                     int startIndex = 0;
                     int endIndex = 0;

@@ -2,6 +2,8 @@ package com.xjtu.se;
 
 import java.util.*;
 
+import com.xjtu.se.Roadsearch.virtualNode;
+
 import xjtu.se.hmbb.dataStruct.AMGraph;
 
 /**
@@ -66,7 +68,56 @@ public class Roadsearch {
 			//合法
 			return 1;
 		}
-		
+		/**
+		 * SK66算法
+		 * 
+		 */
+		public List<Integer> SK66( List<Integer> canvisit){
+			if(canvisit.size()==0){
+				return path2vn.get(String.valueOf(_am.getEnd()));
+			}
+			List<Integer> shortpath = null;
+			int minCost = Integer.MAX_VALUE;
+			for (Integer node : canvisit) {
+				int D = cost2vn.get(node.toString());
+				if(D>=minCost){
+					continue;
+				}
+				List<Integer> canvisit2 = new ArrayList<Integer>();
+				canvisit2.addAll(canvisit);
+				canvisit2.remove(node);
+				List<Integer> subPath = vnallMap.get(node).SK66(canvisit2);
+				if(subPath!=null){
+					boolean flag = false;
+					for (Integer subnode : subPath) {
+						if(subnode.equals((Integer)_am.getEnd())){
+							continue;
+						}else if(!canvisit.contains(subnode)
+								&&cost2vn.containsKey(subnode.toString())){
+							flag = true;
+							break;
+						}else if(subnode.equals(this.real_id1)){
+							flag = true;
+							break;
+						}
+					}
+					if(flag){
+						continue;
+					}
+					int f = caculateCost(subPath);
+					int fn = D+f;
+					if(fn<minCost){
+						minCost = fn;
+						subPath.remove(0);
+						subPath.addAll(0, path2vn.get(String.valueOf(node)));
+						System.out.println(converPathtoName2(subPath));
+						shortpath = subPath;
+					}
+				}
+			}
+			
+			return shortpath;
+		}
 		/**
 		 * 遍历
 		 * @return
@@ -255,8 +306,18 @@ public class Roadsearch {
 		//Map<Integer, Boolean> isvisited1 = new HashMap<Integer,Boolean>();
 		List<Integer> isvisited2 = new ArrayList<Integer>();
 
-		int epoch = vnallMap.get(_am.getStart()).search(1,isvisited2);
-		System.out.println("end ! epoch size = "+epoch);
+//		int epoch = vnallMap.get(_am.getStart()).search(1,isvisited2);
+//		System.out.println("end ! epoch size = "+epoch);
+		
+		List<Integer> canvisit = new ArrayList<Integer>();
+		for (virtualNode allnode : vnallList) {
+			canvisit.add(allnode.real_id1);
+		}
+		canvisit.remove((Integer)_am.getStart());
+		canvisit.remove((Integer)_am.getEnd());
+		String pathRoute = converPathtoName2(vnallMap.get(_am.getStart()).SK66(canvisit));
+		System.out.println();
+		System.out.println(pathRoute);
 		
 	}
 	

@@ -29,8 +29,8 @@ public class Roadsearch {
 	 * 入口
 	 */
 	public void searchroad() {
-		int start = 0;
-		int end = 4;
+		int start = _am.getStart();
+		int end = _am.getEnd();
 		String[] shortPath2 = Dij(_am.getEdges(), start);
 		
 		printMatrix(_am.getEdges(), "edges");

@@ -14,7 +14,8 @@ public class Test {
         
         //int[][] edge = am.getEdges();
         Roadsearch roadsearch = new Roadsearch(am);
-        roadsearch.searchroad();
+        roadsearch.searchroad_vn();
+        //roadsearch.searchroad();
         
     }
 }

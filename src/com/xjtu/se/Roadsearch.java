@@ -5,6 +5,7 @@ import java.util.*;
 import com.xjtu.se.Roadsearch.virtualNode;
 
 import xjtu.se.hmbb.dataStruct.AMGraph;
+import xjtu.se.hmbb.dataStruct.Path;
 
 /**
  * 主程序
@@ -34,7 +35,8 @@ public class Roadsearch {
 		public Map<String, List<Integer> > path2vn = new HashMap<String, List<Integer> >();
 		//保存到任一 key= 虚拟点id 的dij最短路径的代价。integer = cost
 		public Map<String, Integer > cost2vn = new HashMap<String, Integer >();
-		
+		//保存到任一key= 虚拟店id 的maxnode点内dij最短路径集合
+		public Map<String,Path[]> path2vnMap = new HashMap<String,Path[]>() ;
 		
 		
 		public virtualNode() {
@@ -72,8 +74,13 @@ public class Roadsearch {
 		 * SK66算法
 		 * 
 		 */
+		/**
+		 * SK66算法
+		 * 
+		 */
 		public List<Integer> SK66( List<Integer> canvisit){
 			if(canvisit.size()==0){
+				System.out.println(converPathtoName2(path2vn.get(String.valueOf(_am.getEnd()))));
 				return path2vn.get(String.valueOf(_am.getEnd()));
 			}
 			List<Integer> shortpath = null;
@@ -83,40 +90,113 @@ public class Roadsearch {
 				if(D>=minCost){
 					continue;
 				}
+				//下一次迭代可选的节点
 				List<Integer> canvisit2 = new ArrayList<Integer>();
 				canvisit2.addAll(canvisit);
 				canvisit2.remove(node);
+				canvisit2.removeAll(path2vn.get(String.valueOf(node)));
+ 				//迭代，寻找node到end的最小路径
 				List<Integer> subPath = vnallMap.get(node).SK66(canvisit2);
 				if(subPath!=null){
-					boolean flag = false;
-					for (Integer subnode : subPath) {
-						if(subnode.equals((Integer)_am.getEnd())){
-							continue;
-						}else if(!canvisit.contains(subnode)
-								&&cost2vn.containsKey(subnode.toString())){
-							flag = true;
-							break;
-						}else if(subnode.equals(this.real_id1)){
-							flag = true;
-							break;
-						}
-					}
-					if(flag){
-						continue;
-					}
+					//存在这样的路径
+					System.out.println(converPathtoName2(subPath));
 					int f = caculateCost(subPath);
+					//node到end的权值
 					int fn = D+f;
+					//总权值
 					if(fn<minCost){
+						//找到最小
 						minCost = fn;
-						subPath.remove(0);
-						subPath.addAll(0, path2vn.get(String.valueOf(node)));
-						System.out.println(converPathtoName2(subPath));
-						shortpath = subPath;
+						List<Integer> path2node2end = new ArrayList<Integer>();
+						path2node2end.addAll(subPath);
+						path2node2end.remove(0);
+						path2node2end.addAll(0, path2vn.get(String.valueOf(node)));
+						shortpath = path2node2end;
 					}
 				}
 			}
-			
+
 			return shortpath;
+		}
+		/**
+		 * 求解maxnum点内到达的解集合
+		 * 
+		 */
+		public Path[] SK66( List<Integer> canvisit , int maxnum){
+			if(canvisit.size()==0){
+				return  path2vnMap.get(String.valueOf(_am.getEnd()));
+			}
+			//path[i]为i步到终点
+			Path[] shortpathSet = new Path[maxnum+1];
+			
+			int[] minCost = new int[maxnum];
+			for (int i = 0; i < minCost.length; i++) {
+				minCost[i] = Integer.MAX_VALUE;
+			}
+			for (Integer node : canvisit) {
+				
+				//到中间节点node的路径集合
+				Path[] paths = path2vnMap.get(node.toString());
+				
+				//fn=min(D+f(n-1)) D到中间节点的距离，fn-1是迭代得到的中间到最终
+				//对每一条开始start到中间node的路径循环
+				for (int i = maxnum ; i >0 ; i--) {
+					Path path = paths[i];//开始到中间
+					//下一次迭代可以访问的节点
+					if (path!=null&&path.weight<Integer.MAX_VALUE) {
+						//路径存在
+						List<Integer> canvisit2 = new ArrayList<Integer>();
+						canvisit2.addAll(canvisit);
+						canvisit2.remove(node);//移出这次的node
+						canvisit2.removeAll(path.nodes);
+						
+						int D = path.weight;
+						
+						//node到end的路径集合
+						Path[] subPathSet = vnallMap.get(node).SK66(canvisit2,maxnum);
+						for(int j = maxnum ; j > 0 ; j--){
+							Path subPath = subPathSet[j];//中间到end
+							if(subPath!=null&&subPath.weight<Integer.MAX_VALUE){
+								//路径存在
+								int f = subPath.weight;
+								int fn = D+f;
+								int index = path.count+subPath.count-1;
+								
+								if(index<=maxnum&&shortpathSet[index]==null){
+									boolean insert = true;
+									for(int bIndex = 1;bIndex<index;bIndex++){
+										if(shortpathSet[bIndex]!=null&&shortpathSet[bIndex].weight<fn){
+											insert = false;
+											break;
+										}
+									}
+									if(insert){
+										try {
+											shortpathSet[index] = new Path(path, subPath);
+										} catch (Exception e) {
+										}
+									}
+								}else if(index<=maxnum&&fn<shortpathSet[index].weight){
+									//如果小于当前解index节点的权值
+									try {
+										shortpathSet[index] = new Path(path, subPath);
+									} catch (Exception e) {
+									}
+									for(index++;index<maxnum+1;index++){
+										if(shortpathSet[index]==null){
+											shortpathSet[index]=null;
+										}else if(fn<=shortpathSet[index].weight){
+											shortpathSet[index]=null;
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+
+			return shortpathSet;
 		}
 		/**
 		 * 遍历
@@ -387,7 +467,128 @@ public class Roadsearch {
 		
 		//
 	}
-	
+	/**
+	 * 入口，测试DijS
+	 */
+	public void searchroad_DijS() {
+		int start = _am.getStart();
+		int end = _am.getEnd();
+		int maxnum = 9;
+		Path[][] shortPath2 = DijS(_am.getEdges(), start,maxnum);
+		//printMatrix(_am.getEdges(), "edges");
+		
+		int vertexcount = _am.getEdges().length;
+		for (int i = 0; i < vertexcount; i++) {
+			//String reString = _am.getVertexList().get(Integer.parseInt(shortPath2[i]));
+			System.out.println("from " + converPathtoName(String.valueOf(start)) 
+			+ " to " + converPathtoName(String.valueOf(i)) + " route= ");
+			for(int max = 1;max<maxnum;max++){
+				Path p = shortPath2[i][max];
+				if (p!=null&&p.weight<Integer.MAX_VALUE) {
+					System.out.println("\t"+p.count+"nodes "+"\t"+p.weight+"length "+ converPathtoName2(p.nodes));
+				}
+			}
+		}
+	}
+	public void searchroad_SK66() {
+		int maxnum = 10;
+		// 添加到vs集合
+		//TreeSet<Integer> vs = new TreeSet<Integer>();
+		for (int i = 0; i < _am.getFruitRoomList().size(); i++) {
+			//vs.add(_am.getFruitRoomList().get(i));
+			virtualNode _vNode = new virtualNode();
+			_vNode.real_id1 = _am.getFruitRoomList().get(i);
+
+			vnallList.add(_vNode);
+			vsList.add(_vNode);
+
+			vnallMap.put(_vNode.real_id1, _vNode);
+			vsMap.put(_vNode.real_id1, _vNode);
+		}
+		//System.out.println("VS="+ vs);
+		//add vs-arc
+		for (int i = 0; i < _am.getRewardPath().size(); i++) {
+			int[] temp_line = _am.getRewardPath().get(i);//获得一条必过边
+			int s1 = temp_line[0];
+			int s2 = temp_line[1];
+			virtualNode _vNode1 = new virtualNode();
+			_vNode1.real_id1 = s1;
+			_vNode1.real_id2 = s2;
+			vnallList.add(_vNode1);
+			vsList.add(_vNode1);
+			vnallMap.put(_vNode1.real_id1, _vNode1);
+			vsMap.put(_vNode1.real_id1, _vNode1);
+
+			virtualNode _vNode2 = new virtualNode();
+			_vNode2.real_id1 = s2;
+			_vNode2.real_id2 = s1;
+			vnallList.add(_vNode2);
+			vsList.add(_vNode2);
+			vnallMap.put(_vNode2.real_id1, _vNode2);
+			vsMap.put(_vNode2.real_id1, _vNode2);
+
+
+		}
+		System.out.println("VNALLlist.size="+ vnallList.size());
+		//add source target
+		virtualNode _vNode_s = new virtualNode();
+		_vNode_s.real_id1 = _am.getStart();
+		vnallList.add(_vNode_s);
+		vnallMap.put(_vNode_s.real_id1, _vNode_s);
+
+		virtualNode _vNode_t = new virtualNode();
+		_vNode_t.real_id1 = _am.getEnd();
+		vnallList.add(_vNode_t);
+		vnallMap.put(_vNode_t.real_id1, _vNode_t);
+
+		List<Integer> mustNodeIds = new ArrayList<>();
+		for (virtualNode n : vnallList) {
+			mustNodeIds.add(n.real_id1);
+		}
+		
+		//遍历所有vnall
+		int vnid1,vnid2;
+		for (virtualNode vn1 : vnallList) {
+			vnid1 = vn1.real_id1;
+			//maxnum节点内能到的路径集合
+			//get dij path
+			Path[][] shortPathSet = DijS(_am.getEdges(),vnid1,maxnum);
+			
+			for (virtualNode vn2 : vnallList) {
+				vnid2 = vn2.real_id1;
+				if (vnid1!= vnid2 ) {//不是自己到自己
+					vn1.path2vnMap.put(String.valueOf(vnid2), shortPathSet[vnid2]);
+				}
+			}
+		}
+		
+		
+		
+		List<Integer> canvisit = new ArrayList<Integer>();
+		for (virtualNode allnode : vnallList) {
+			canvisit.add(allnode.real_id1);
+		}
+		canvisit.remove((Integer)_am.getStart());
+		canvisit.remove((Integer)_am.getEnd());
+		
+		Path[] realroute = vnallMap.get(_am.getStart()).SK66(canvisit,maxnum);
+		System.out.println(maxnum+"点内到达：");
+		boolean find = false;
+		for (int i=maxnum;i>0;i--) {
+			Path path = realroute[i];
+			if (path!=null) {
+				String pathRoute = converPathtoName2(path.nodes);
+				System.out.println(path.weight+"length\t"+path.count+"nodes");
+				System.out.println(pathRoute);
+				find = true;
+				break;
+			}
+		}
+		if (!find) {
+			System.out.println("can't reach within "+maxnum+" nodes");
+		}
+
+	}
 	
 	/* ***********公有接口 end *************************/
 	
@@ -588,7 +789,60 @@ public class Roadsearch {
 		return path;
 	}
 	
-	
+	private Path[][] DijS(int[][] weight1, int start,int maxnodenum) {
+		int[][] weight =arraysCopy(weight1);
+		int n = weight.length; // 顶点个数
+		Path[][] pathSet = new Path[n][maxnodenum+1];
+		for(int max = 5;max<=maxnodenum;max++){
+			// 接受一个有向图的权重矩阵，和一个起点编号start（从0编号，顶点存在数组中）
+			// 返回一个int[] 数组，表示从start到它的最短路径长度
+			Path[] path = new Path[n]; // 存放从start到其他各点的最短路径的字符串表示
+			int[] visited = new int[n]; //标记当前该顶点的最短路径是否已经求出,1表示已求出
+
+			// 初始化，第一个顶点求出
+			visited[start] = 1;
+			path[start] = new Path(start, start,  0);
+
+			for(int i=0;i<n;i++){
+				if ( weight[start][i] < Integer.MAX_VALUE && max>1) {
+					path[i] = new Path(start, i,  weight[start][i]);
+				}else if(i!=start){
+					path[i] = new Path(start, i,  Integer.MAX_VALUE);
+				}
+			}
+			// 要加入n-1个顶点
+			for (int count = 1; count <= n-1; count++) {
+				int k = -1; // 选出一个距离初始顶点start最近的未标记顶点
+				int dmin = Integer.MAX_VALUE;//寻找最小的节点i
+				for (int i = 0; i < n; i++) {
+					if (visited[i] == 0 && 
+							path[i].weight < dmin&&path[i].count<max) {
+						dmin = path[i].weight ;
+						k = i;
+					}
+				}
+				if (k<0) {
+					break;
+				}
+
+				// 将新选出的顶点标记为已求出最短路径，且到start的最短路径就是dmin
+				visited[k] = 1;
+
+				// 以k为中间点，修正从start到未访问各点的距离
+				for (int i = 0; i < n; i++) {
+					Path temp = new Path(path[k],i,weight[k][i]);
+					if (visited[i] == 0 && (temp.weight < path[i].weight) ){
+						path[i] = new Path(path[k],i,weight[k][i]);
+					}
+				}
+			}
+			for (int i = 0; i < path.length; i++) {
+				pathSet[i][path[i].count] = path[i];
+			}
+		}
+
+		return pathSet;
+	}
 	
 	
 	

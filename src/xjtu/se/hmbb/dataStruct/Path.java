@@ -22,6 +22,9 @@ public class Path {
 		this.count = start==target?1:2;
 	}
 	public Path(Path p1,Path p2) throws Exception{
+		if (p1==null||p2==null) {
+			throw new Exception();
+		}
 		this.nodes = new ArrayList<Integer>();
 		this.nodes.addAll(p1.nodes);
 		if (p1.nodes.get(p1.nodes.size()-1)==p2.nodes.get(0)&&p1.weight<Integer.MAX_VALUE&&p2.weight<Integer.MAX_VALUE

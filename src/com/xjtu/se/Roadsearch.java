@@ -28,7 +28,7 @@ public class Roadsearch {
 		
 		public int real_id1 ;//真实nodeID，
 		public int real_id2= -1 ;//真实点是边的才会用到id2，
-		
+		public int weight = Integer.MAX_VALUE;
 		public virtualNode pnext;//指向下一个vn，用作生成路径。
 		
 		//保存到任一 key= 虚拟点id 的dij最短路径。integer = real nodeid
@@ -125,6 +125,21 @@ public class Roadsearch {
 		public Path[] SK66( List<Integer> canvisit , int maxnum){
 			if(canvisit.size()==0){
 				return  path2vnMap.get(String.valueOf(_am.getEnd()));
+			}else if(this.real_id2>=0&&canvisit.contains(this.real_id2)){
+				canvisit.remove((Integer)this.real_id2);
+				Path[] pathsid12id2 = vnallMap.get((Integer)this.real_id2).SK66(canvisit,maxnum);
+				Path pathid12id2 = new Path(this.real_id1, this.real_id2,this.weight);
+				for (int i = 0; i < pathsid12id2.length; i++) {
+					try {
+//						System.out.println(converPathtoName2(pathid12id2.nodes));
+//						System.out.println(converPathtoName2(pathsid12id2[i].nodes));
+						pathsid12id2[i] = new Path(pathid12id2, pathsid12id2[i]);
+					} catch (Exception e) {
+						// TODO: handle exception
+						pathsid12id2[i] = null;
+					}
+				}
+				return pathsid12id2;
 			}
 			//path[i]为i步到终点
 			Path[] shortpathSet = new Path[maxnum+1];
@@ -514,6 +529,7 @@ public class Roadsearch {
 			virtualNode _vNode1 = new virtualNode();
 			_vNode1.real_id1 = s1;
 			_vNode1.real_id2 = s2;
+			_vNode1.weight = _am.getEdges()[s1][s2];
 			vnallList.add(_vNode1);
 			vsList.add(_vNode1);
 			vnallMap.put(_vNode1.real_id1, _vNode1);
@@ -522,6 +538,7 @@ public class Roadsearch {
 			virtualNode _vNode2 = new virtualNode();
 			_vNode2.real_id1 = s2;
 			_vNode2.real_id2 = s1;
+			_vNode2.weight = _am.getEdges()[s2][s1];
 			vnallList.add(_vNode2);
 			vsList.add(_vNode2);
 			vnallMap.put(_vNode2.real_id1, _vNode2);

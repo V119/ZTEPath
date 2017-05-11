@@ -21,6 +21,11 @@ public class Path {
 		this.weight = weight;
 		this.count = start==target?1:2;
 	}
+	public Path(){
+		this.weight = Integer.MAX_VALUE;
+		this.count = 0;
+		this.nodes = new ArrayList<Integer>();
+	}
 	public Path(Path p1,Path p2) throws Exception{
 		if (p1==null||p2==null) {
 			throw new Exception();

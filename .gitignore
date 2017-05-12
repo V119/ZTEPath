@@ -18,3 +18,4 @@ ZTEPath.iml
 *.project
 .settings/org.eclipse.jdt.core.prefs
 *.prefs
+src/Test.java

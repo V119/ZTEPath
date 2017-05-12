@@ -13,7 +13,8 @@ public class Test {
 
 		Scanner sc = new Scanner(System.in);
 		String filename = null;
-		File file = new File("graph.txt");
+		File file = new File("C:\\Users\\chensharp\\workspace\\ZTEPath\\src\\graph.txt");
+		//File file = new File("/graph.txt");
 		if (!file.exists()) {
 			System.out.println("找不到文件graph.txt");
 			System.out.println("键入Q以退出");
@@ -42,7 +43,7 @@ public class Test {
 		AMGraph am = new AMGraph(file);
 
 		Roadsearch roadsearch = new Roadsearch(am);
-		roadsearch.searchroad_SK66(maxnum);
+		roadsearch.searchroad_vnsk(maxnum);
 		
 		System.out.println("键入Q以退出");
 		while (sc.hasNextLine()) {

@@ -76,8 +76,26 @@ public class Roadsearch {
 						paths2e[i].weight = Integer.MAX_VALUE;
 					}
 				}
+//				System.out.println(converPathtoName(String.valueOf(this.real_id1)));
+//				System.out.print("到");
+//				System.out.print(converPathtoName(String.valueOf(_am.getEnd())));
+//				System.out.println("的最多"+maxnum+"点最短路径为");
+//				if(paths2e[maxnum].weight==Integer.MAX_VALUE){
+//					System.out.println("无法到达");
+//				}else{
+//					Path lastp = null;
+//					for (Path path2 : paths2e) {
+//						if (lastp==null||path2.count!=Integer.MAX_VALUE||path2.count==lastp.count) {
+//							continue;
+//						}
+//						lastp = path2;
+//						System.out.println("\t"+converPathtoName2(path2.nodes));
+//					}
+//				}
 				return paths2e;
 			}else if(this.real_id1>=0&&canvisit.contains(this.real_id2)){
+				
+				
 				canvisit.remove((Integer)this.real_id2);
 				//				canvisit.remove((Integer)this.real_id1);
 				Path[] pathsid22idt = vnallMap.get((Integer)this.real_id2).VNSK(canvisit, maxnum-1);
@@ -91,6 +109,27 @@ public class Roadsearch {
 						pathsid12id2[i] = new Path();
 					}
 				}
+//				System.out.print("必过边"+converPathtoName(String.valueOf(this.real_id1)));
+//				System.out.print("-"+converPathtoName(String.valueOf(this.real_id2)));
+//				System.out.print("经过{");
+//				for (Integer node : canvisit) {
+//					System.out.print(converPathtoName(String.valueOf(node))+" ");
+//				}
+//				System.out.print("}到E最短路径：");
+//				if(pathsid12id2[maxnum].weight==Integer.MAX_VALUE){
+//					System.out.println("无法到达");
+//				}else{
+//					Path lastp = null;
+//					System.out.println();
+//					for (Path path2 : pathsid12id2) {
+//						if (lastp==null||path2.count!=Integer.MAX_VALUE||path2.count==lastp.count) {
+//							continue;
+//						}
+//						lastp = path2;
+//						System.out.println("\t"+converPathtoName2(path2.nodes));
+//					}
+//				}
+				
 				return pathsid12id2;
 			}
 			//path[i]为i步到终点
@@ -195,21 +234,21 @@ public class Roadsearch {
 								//
 								if(counttotalpath<=maxnum&&fn<shortpathSet[counttotalpath].weight){
 									//如果小于当前解index节点的权值
-									System.out.println("-------------\n选择：");
-									System.out.println(converPathtoName2(path.nodes));
-									System.out.println(converPathtoName2(subPath.nodes));
-									System.out.print("更新节点数大于等于"+counttotalpath);
-									System.out.print("的");
-									System.out.print(converPathtoName(String.valueOf(this.real_id1)));
-									System.out.print("->");
-									System.out.print(converPathtoName(String.valueOf(_am.getEnd())));
-									System.out.print("的路径为\n");
+//									System.out.println("-------------\n选择：");
+//									System.out.println(converPathtoName2(path.nodes));
+//									System.out.println(converPathtoName2(subPath.nodes));
+//									System.out.print("更新节点数大于等于"+counttotalpath);
+//									System.out.print("的");
+//									System.out.print(converPathtoName(String.valueOf(this.real_id1)));
+//									System.out.print("->");
+//									System.out.print(converPathtoName(String.valueOf(_am.getEnd())));
+//									System.out.print("的路径为\n");
 									try {
 										shortpathSet[counttotalpath] = new Path(path, subPath);
 									} catch (Exception e) {
 									}
-									System.out.print(converPathtoName2(shortpathSet[counttotalpath].nodes));
-									System.out.println("\n-------------");
+//									System.out.print(converPathtoName2(shortpathSet[counttotalpath].nodes));
+//									System.out.println("\n-------------");
 									int index = counttotalpath;
 									index++;
 									for(;index<maxnum+1;index++){
@@ -226,7 +265,26 @@ public class Roadsearch {
 					}
 				}
 			}
-
+//			System.out.print(converPathtoName(String.valueOf(this.real_id1)));
+//			System.out.print("在"+maxnum+"点内经过{ ");
+//			for (Integer node : canvisit) {
+//				System.out.print(converPathtoName(String.valueOf(node))+" ");
+//			}
+//			System.out.print("}中的任意点到达终点E的路径有：");
+//			
+//			if(shortpathSet[maxnum].weight==Integer.MAX_VALUE){
+//				System.out.println("无法到达");	
+//			}else{
+//				Path lastp = null;
+//				System.out.println();
+//				for (Path path2 : shortpathSet) {
+//					if (lastp==null||path2.count!=Integer.MAX_VALUE||path2.count==lastp.count) {
+//						continue;
+//					}
+//					lastp = path2;
+//					System.out.println("\t"+converPathtoName2(path2.nodes));
+//				}
+//			}
 			return shortpathSet;
 		}
 		/**
@@ -529,7 +587,7 @@ public class Roadsearch {
 			//get dij path
 			Path[][] shortPathSet = DijS(map,vnid1,maxnum);
 
-			System.out.println(converPathtoName(String.valueOf(vnid1))+"节点到其余必经节点路径初始化：");
+//			System.out.println(converPathtoName(String.valueOf(vnid1))+"节点到其余必经节点路径初始化：");
 			for (virtualNode vn2 : vnallList) {
 				vnid2 = vn2.real_id1;
 				Path[] pathid12id2 = shortPathSet[vnid2];
@@ -537,15 +595,15 @@ public class Roadsearch {
 				//String reString = _am.getVertexList().get(Integer.parseInt(shortPath2[i]));
 //				System.out.println(converPathtoName(String.valueOf(vnid1)) 
 //				+ " to " + converPathtoName(String.valueOf(vnid2)) + " 路径： ");
-				Path lastp = null;
-				for(int max = 1;max<maxnum;max++){
-					Path p = shortPathSet[vnid2][max];
-					if ((lastp==null||lastp.count!=p.count)&&p.weight<Integer.MAX_VALUE) {
-						lastp = p;
-						System.out.println(p.weight
-								+" "+ converPathtoName2(p.nodes));
-					}
-				}
+//				Path lastp = null;
+//				for(int max = 1;max<maxnum;max++){
+//					Path p = shortPathSet[vnid2][max];
+//					if ((lastp==null||lastp.count!=p.count)&&p.weight<Integer.MAX_VALUE) {
+//						lastp = p;
+//						System.out.println(p.weight
+//								+" "+ converPathtoName2(p.nodes));
+//					}
+//				}
 				vn1.path2vnMap.put(String.valueOf(vnid2), shortPathSet[vnid2]);
 			}
 		}

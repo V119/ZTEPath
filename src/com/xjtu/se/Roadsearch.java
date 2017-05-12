@@ -106,10 +106,10 @@ public class Roadsearch {
 				//fn=min(D+f(n-1)) D到中间节点的距离，fn-1是迭代得到的中间到最终
 				//对每一条开始start到中间node的路径循环
 				Path lastpath = null;
-				//				System.out.println(converPathtoName(String.valueOf(this.real_id1))
-				//						+"到"
-				//						+converPathtoName(String.valueOf(node))
-				//						+"可选路径：");
+//				System.out.println(converPathtoName(String.valueOf(this.real_id1))
+//						+"到"
+//						+converPathtoName(String.valueOf(node))
+//						+"可选路径：");
 				for (int i = maxnum ; i >0 ; i--) {
 					Path path = paths[i];//开始到中间
 					if(path==null||(lastpath!=null&&path.count==lastpath.count)){
@@ -119,7 +119,7 @@ public class Roadsearch {
 					lastpath = path;
 					//下一次迭代可以访问的节点
 					if (path.weight<Integer.MAX_VALUE) {
-						//						System.out.println(converPathtoName2(path.nodes));
+//						System.out.println(converPathtoName2(path.nodes));
 						//路径存在
 						int D = path.weight;
 						Path[] pathnode2t = vnallMap.get((Integer)node).path2vnMap.get(String.valueOf(_am.getEnd()));//中间到结束
@@ -166,19 +166,19 @@ public class Roadsearch {
 						//node到end的路径集合
 						Path[] subPathSet = vnallMap.get(node).VNSK(canvisit2,nextcount);
 						Path lastsubPath = null;
-						//						System.out.println(converPathtoName(String.valueOf(node))
-						//								+"到"
-						//								+converPathtoName(String.valueOf(_am.getEnd()))
-						//								+"可选路径：");
-						//						for(int j = nextcount ; j > 0 ; j--){
-						//							Path subPath = subPathSet[j];//中间到end
-						//							//上一次的subPath跟这一次一样
-						//							if(subPath==null||(lastsubPath!=null&&subPath.count==lastsubPath.count)){
-						//								continue;
-						//							}
-						//							lastsubPath = subPathSet[j];
-						//							System.out.println(converPathtoName2(subPath.nodes));
-						//						}
+//						System.out.println(converPathtoName(String.valueOf(node))
+//								+"到"
+//								+converPathtoName(String.valueOf(_am.getEnd()))
+//								+"可选路径：");
+//						for(int j = nextcount ; j > 0 ; j--){
+//							Path subPath = subPathSet[j];//中间到end
+//							//上一次的subPath跟这一次一样
+//							if(subPath==null||(lastsubPath!=null&&subPath.count==lastsubPath.count)){
+//								continue;
+//							}
+//							lastsubPath = subPathSet[j];
+//							System.out.println(converPathtoName2(subPath.nodes));
+//						}
 						for(int j = nextcount ; j > 0 ; j--){
 							Path subPath = subPathSet[j];//中间到end
 							//上一次的subPath跟这一次一样
@@ -226,7 +226,7 @@ public class Roadsearch {
 					}
 				}
 			}
-
+			
 			return shortpathSet;
 		}
 		/**
@@ -432,7 +432,7 @@ public class Roadsearch {
 
 	}
 
-
+	
 	/**
 	 * 入口，测试DijS
 	 */
@@ -456,120 +456,115 @@ public class Roadsearch {
 			}
 		}
 	}
-
+	
 	/**
 	 * 算法入口
 	 * @param maxnum:最长搜索节点数目
 	 */
 	public String searchroad_vnsk(int maxnum) {
 		// 添加到vs集合
-		for (int i = 0; i < _am.getFruitRoomList().size(); i++) {
-			//vs.add(_am.getFruitRoomList().get(i));
-			virtualNode _vNode = new virtualNode();
-			_vNode.real_id1 = _am.getFruitRoomList().get(i);
+				for (int i = 0; i < _am.getFruitRoomList().size(); i++) {
+					//vs.add(_am.getFruitRoomList().get(i));
+					virtualNode _vNode = new virtualNode();
+					_vNode.real_id1 = _am.getFruitRoomList().get(i);
 
-			vnallList.add(_vNode);
-			vsList.add(_vNode);
+					vnallList.add(_vNode);
+					vsList.add(_vNode);
 
-			vnallMap.put(_vNode.real_id1, _vNode);
-			vsMap.put(_vNode.real_id1, _vNode);
-		}
-		//add vs-arc
-		for (int i = 0; i < _am.getRewardPath().size(); i++) {
-			int[] temp_line = _am.getRewardPath().get(i);//获得一条必过边
-			int s1 = temp_line[0];
-			int s2 = temp_line[1];
-			virtualNode _vNode1 = new virtualNode();
-			_vNode1.real_id1 = s1;
-			_vNode1.real_id2 = s2;
-			_vNode1.weight = _am.getEdges()[s1][s2];
-			vnallList.add(_vNode1);
-			vsList.add(_vNode1);
-			vnallMap.put(_vNode1.real_id1, _vNode1);
-			vsMap.put(_vNode1.real_id1, _vNode1);
+					vnallMap.put(_vNode.real_id1, _vNode);
+					vsMap.put(_vNode.real_id1, _vNode);
+				}
+				//add vs-arc
+				for (int i = 0; i < _am.getRewardPath().size(); i++) {
+					int[] temp_line = _am.getRewardPath().get(i);//获得一条必过边
+					int s1 = temp_line[0];
+					int s2 = temp_line[1];
+					virtualNode _vNode1 = new virtualNode();
+					_vNode1.real_id1 = s1;
+					_vNode1.real_id2 = s2;
+					_vNode1.weight = _am.getEdges()[s1][s2];
+					vnallList.add(_vNode1);
+					vsList.add(_vNode1);
+					vnallMap.put(_vNode1.real_id1, _vNode1);
+					vsMap.put(_vNode1.real_id1, _vNode1);
 
-			virtualNode _vNode2 = new virtualNode();
-			_vNode2.real_id1 = s2;
-			_vNode2.real_id2 = s1;
-			_vNode2.weight = _am.getEdges()[s2][s1];
+					virtualNode _vNode2 = new virtualNode();
+					_vNode2.real_id1 = s2;
+					_vNode2.real_id2 = s1;
+					_vNode2.weight = _am.getEdges()[s2][s1];
 
-			vnallList.add(_vNode2);
-			vsList.add(_vNode2);
-			vnallMap.put(_vNode2.real_id1, _vNode2);
-			vsMap.put(_vNode2.real_id1, _vNode2);
+					vnallList.add(_vNode2);
+					vsList.add(_vNode2);
+					vnallMap.put(_vNode2.real_id1, _vNode2);
+					vsMap.put(_vNode2.real_id1, _vNode2);
 
 
-		}
-		//add source target
-		virtualNode _vNode_s = new virtualNode();
-		_vNode_s.real_id1 = _am.getStart();
-		vnallList.add(_vNode_s);
-		vnallMap.put(_vNode_s.real_id1, _vNode_s);
+				}
+				//add source target
+				virtualNode _vNode_s = new virtualNode();
+				_vNode_s.real_id1 = _am.getStart();
+				vnallList.add(_vNode_s);
+				vnallMap.put(_vNode_s.real_id1, _vNode_s);
 
-		virtualNode _vNode_t = new virtualNode();
-		_vNode_t.real_id1 = _am.getEnd();
-		vnallList.add(_vNode_t);
-		vnallMap.put(_vNode_t.real_id1, _vNode_t);
+				virtualNode _vNode_t = new virtualNode();
+				_vNode_t.real_id1 = _am.getEnd();
+				vnallList.add(_vNode_t);
+				vnallMap.put(_vNode_t.real_id1, _vNode_t);
 
-		List<Integer> mustNodeIds = new ArrayList<>();
-		for (virtualNode n : vnallList) {
-			mustNodeIds.add(n.real_id1);
-		}
+				List<Integer> mustNodeIds = new ArrayList<>();
+				for (virtualNode n : vnallList) {
+					mustNodeIds.add(n.real_id1);
+				}
 
-		int map[][] = _am.getEdges();
-		for (int[] anteater : _am.getAnteaterPath()) {
-			map[anteater[0]][anteater[1]]=Integer.MAX_VALUE;
-			map[anteater[1]][anteater[0]]=Integer.MAX_VALUE;
-		};
-		//遍历所有vnall
-		int vnid1,vnid2;
-		for (virtualNode vn1 : vnallList) {
-			vnid1 = vn1.real_id1;
-			//maxnum节点内能到的路径集合
-			//get dij path
-			Path[][] shortPathSet = DijS(map,vnid1,maxnum);
+				//遍历所有vnall
+				int vnid1,vnid2;
+				for (virtualNode vn1 : vnallList) {
+					vnid1 = vn1.real_id1;
+					//maxnum节点内能到的路径集合
+					//get dij path
+					Path[][] shortPathSet = DijS(_am.getEdges(),vnid1,maxnum);
 
-			System.out.println(converPathtoName(String.valueOf(vnid1))+"节点到其余必经节点路径初始化：");
-			for (virtualNode vn2 : vnallList) {
-				vnid2 = vn2.real_id1;
-				Path[] pathid12id2 = shortPathSet[vnid2];
-
-				//String reString = _am.getVertexList().get(Integer.parseInt(shortPath2[i]));
-//				System.out.println(converPathtoName(String.valueOf(vnid1)) 
-//				+ " to " + converPathtoName(String.valueOf(vnid2)) + " 路径： ");
-				Path lastp = null;
-				for(int max = 1;max<maxnum;max++){
-					Path p = shortPathSet[vnid2][max];
-					if ((lastp==null||lastp.count!=p.count)&&p.weight<Integer.MAX_VALUE) {
-						lastp = p;
-						System.out.println(p.weight
-								+" "+ converPathtoName2(p.nodes));
+					for (virtualNode vn2 : vnallList) {
+						vnid2 = vn2.real_id1;
+						Path[] pathid12id2 = shortPathSet[vnid2];
+						
+						//String reString = _am.getVertexList().get(Integer.parseInt(shortPath2[i]));
+						System.out.println("from " + converPathtoName(String.valueOf(vnid1)) 
+						+ " to " + converPathtoName(String.valueOf(vnid2)) + " route= ");
+						Path lastp = null;
+						for(int max = 1;max<maxnum;max++){
+							Path p = shortPathSet[vnid2][max];
+							if ((lastp==null||lastp.count!=p.count)&&p.weight<Integer.MAX_VALUE) {
+								lastp = p;
+								System.out.println("\t\t\tnodes "+p.count
+										+"\t\tlength "+p.weight
+										+"\troute"+ converPathtoName2(p.nodes));
+							}
+						}
+						vn1.path2vnMap.put(String.valueOf(vnid2), shortPathSet[vnid2]);
 					}
 				}
-				vn1.path2vnMap.put(String.valueOf(vnid2), shortPathSet[vnid2]);
-			}
-		}
 
 
 
-		List<Integer> canvisit = new ArrayList<Integer>();
-		for (virtualNode allnode : vnallList) {
-			canvisit.add(allnode.real_id1);
-		}
-		canvisit.remove((Integer)_am.getStart());
-		canvisit.remove((Integer)_am.getEnd());
+				List<Integer> canvisit = new ArrayList<Integer>();
+				for (virtualNode allnode : vnallList) {
+					canvisit.add(allnode.real_id1);
+				}
+				canvisit.remove((Integer)_am.getStart());
+				canvisit.remove((Integer)_am.getEnd());
 
-		Path[] realroute = vnallMap.get(_am.getStart()).VNSK(canvisit,maxnum);
-		String pathRoute;
-		for (int i=maxnum;i>0;i--) {
-			Path path = realroute[i];
-			if (path.weight<Integer.MAX_VALUE) {
-				pathRoute = converPathtoName2(path.nodes);
-				return pathRoute;
-			}
-		}
+				Path[] realroute = vnallMap.get(_am.getStart()).VNSK(canvisit,maxnum);
+				String pathRoute;
+				for (int i=maxnum;i>0;i--) {
+					Path path = realroute[i];
+					if (path.weight<Integer.MAX_VALUE) {
+						pathRoute = converPathtoName2(path.nodes);
+						return pathRoute;
+					}
+				}
 
-		return null;
+				return null;
 	}
 
 	/* ***********公有接口 end *************************/
@@ -787,34 +782,19 @@ public class Roadsearch {
 		// 初始化，第一个顶点求出
 		hasvisited.add(start);
 		novisited.remove(start);
-//		System.out.println("计算"+converPathtoName(String.valueOf(start))+"节点"+maxnodenum+"步内到达各点的最短路径集合：");
-//		System.out.println("初始S："+converPathtoName(String.valueOf(start)));
-//		System.out.print("初始U：");
-		for (Integer u : novisited) {
-//			System.out.print(converPathtoName(String.valueOf(u))+" ");
-		}
-//		System.out.println();
-//		System.out.println("初始化路径：");
+
 		for (int i = 1; i <= maxnodenum; i++) {
 			pathSet[start][i] = new Path(start, start,  0);
 		}
-//		System.out.print(converPathtoName(String.valueOf(start)));
-//		System.out.print("->");
-//		System.out.print(converPathtoName(String.valueOf(start))+"\t");
-//		System.out.print(converPathtoName2(pathSet[start][1].nodes)+"\t长度："+pathSet[start][1].weight);
-//		System.out.println();
+
+
 		for(int i=1;i<n;i++){
 			if ( weight[start][i] < Integer.MAX_VALUE ) {
-				for (int j = 2; j <= maxnodenum; j++) {
+				for (int j = 1; j <= maxnodenum; j++) {
 					pathSet[i][j] = new Path(start, i,  weight[start][i]);
 				}
-//				System.out.print(converPathtoName(String.valueOf(start)));
-//				System.out.print("->");
-//				System.out.print(converPathtoName(String.valueOf(i))+"\t");
-//				System.out.print(converPathtoName2(pathSet[i][2].nodes)+"\t长度："+pathSet[i][2].weight);
-//				System.out.println();
 			}else if(i!=start){
-				for (int j = 2; j <= maxnodenum; j++) {
+				for (int j = 1; j <= maxnodenum; j++) {
 					pathSet[i][j] = new Path(start, i,  Integer.MAX_VALUE);
 				}
 			}
@@ -833,39 +813,25 @@ public class Roadsearch {
 			if (k<0) {
 				break;
 			}
-//			System.out.println();
-//			System.out.print("在U中选择"+converPathtoName(String.valueOf(k)));
-//			System.out.print("，加入到S，并从U中删除");
-//			System.out.println();
-
+			System.out.println();
+			System.out.print("在U中找到"+converPathtoName(String.valueOf(k)));
+			System.out.print("，加入到S，并从U中删除");
+			System.out.println();
 			// 将新选出的顶点标记为已求出最短路径，且到start的最短路径就是dmin
 			hasvisited.add((Integer)k);
 			novisited.remove((Integer)k);
-
-//			System.out.println("更新后的U：");
-			for (int i = 0; i < novisited.size(); i++) {
-//				System.out.print(converPathtoName(String.valueOf(novisited.get(i))));
-//				System.out.print(" ");
-			}
-//			System.out.println("\n更新后的S：");
-			for (int i = 0; i < hasvisited.size(); i++) {
-//				System.out.print(converPathtoName(String.valueOf(hasvisited.get(i))));
-//				System.out.print(" ");
-			}
-//			System.out.println("\n遍历U：");
-
 			// 以k为中间点，修正从start到未访问各点的距离
 			for (Integer i : novisited) {
 				Path[] path2k = pathSet[k];
 				for (Path ipath2k : path2k) {
 					Path temp = new Path(ipath2k,i,weight[k][i]);
 					if(temp.count<=maxnodenum&&temp.weight<pathSet[i][temp.count].weight){
-//						System.out.print("更新"+converPathtoName(String.valueOf(start)));
-//						System.out.print("->"+converPathtoName(String.valueOf(i)));
-//						System.out.print("的路径集合中，节点数大于"+temp.count);
-//						System.out.print("的路径");
-//						System.out.println();
-//						System.out.println(converPathtoName2(temp.nodes)+"\t长度："+temp.weight);
+						System.out.print("更新"+converPathtoName(String.valueOf(start)));
+						System.out.print("->"+converPathtoName(String.valueOf(i)));
+						System.out.print("的路径集合中，节点数大于"+temp.count);
+						System.out.print("的路径");
+						System.out.println();
+						System.out.println(converPathtoName2(temp.nodes));
 						for (int l = temp.count; l <= maxnodenum; l++) {
 							pathSet[i][l] = temp;
 						}
